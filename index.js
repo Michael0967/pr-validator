@@ -4,7 +4,11 @@ const github = require('@actions/github');
 
 try {
   const MIN_LENGTH = 30;
-  const body = github.context.payload.pull_request?.body || '';
+  
+  // Get PR body from input or fallback to context
+  const prBodyInput = core.getInput('pr-body');
+  const body = prBodyInput || github.context.payload.pull_request?.body || '';
+  
   let msg = '';
 
   // Helpers
@@ -24,11 +28,18 @@ try {
   }
 
   function extractSection(section) {
-    const regex = new RegExp(`^\\s*(\\*\\*)?${section}:(\\*\\*)?\\s*([\\s\\S]*?)(?=\\n\\s*\\*\\*?\\w+:|$)`, 'im');
-    const match = body.match(regex);
+    // Look for the section with proper boundaries
+    const sectionRegex = new RegExp(`^\\s*(\\*\\*)?${section}:(\\*\\*)?\\s*([\\s\\S]*?)(?=\\n\\s*(\\*\\*)?\\w+:|$)`, 'im');
+    const match = body.match(sectionRegex);
+    
     if (!match) return '__MISSING__';
+    
+    // Get the content and clean it
     const content = match[3]?.trim() || '';
-    if (!content) return '__EMPTY__';
+    
+    // Check if content is empty
+    if (!content || content === '') return '__EMPTY__';
+    
     return content;
   }
 

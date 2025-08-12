@@ -2,8 +2,12 @@ name: 'PR Checker - Description, Task, Demo'
 description: 'Validates PR description for required sections.'
 runs:
   using: 'node16'
-  main: 'pr-validation.js'
-inputs: {}
+  main: 'index.js'
+inputs:
+  pr-body:
+    description: 'PR body content to validate'
+    required: false
+    default: ''
 
 branding:
   icon: 'clipboard'
