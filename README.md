@@ -49,7 +49,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR Description
-        uses: Michael0967/pr-validator@v1.0.2
+        uses: Michael0967/pr-validator@v1.0.3
 ```
 
 ### 2. Use this template
