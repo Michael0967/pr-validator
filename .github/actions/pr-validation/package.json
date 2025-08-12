@@ -1,0 +1,13 @@
+{
+  "name": "pr-validation-action",
+  "version": "1.0.0",
+  "description": "GitHub Action to validate PR descriptions (Description, Task, Demo)",
+  "main": "pr-validation.js",
+  "scripts": {},
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "@actions/core": "^1.11.1",
+    "@actions/github": "^6.0.1"
+  }
+}
