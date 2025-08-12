@@ -4,3 +4,7 @@ runs:
   using: 'node16'
   main: 'pr-validation.js'
 inputs: {}
+
+branding:
+  icon: 'clipboard'
+  color: 'green'
