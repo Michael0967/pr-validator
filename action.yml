@@ -1,4 +1,4 @@
-name: 'PR Validation'
+name: 'PR Checker - Description, Task, Demo'
 description: 'Validates PR description for required sections.'
 runs:
   using: 'node16'
