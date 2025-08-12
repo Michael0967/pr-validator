@@ -1,100 +1,158 @@
-# PR Validator GitHub Action
+# PR Validation GitHub Action
 
-A GitHub Action that validates Pull Request descriptions to ensure they contain the required sections: Description, Task, and Demo.
+[![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)](https://github.com/features/actions)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+> **Validates that Pull Request descriptions include mandatory sections with quality content.**
+
+This action ensures a minimum standard for change documentation and prevents PRs with incomplete or invalid information.
+
+---
+
+## Table of Contents
+
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Usage](#usage)
+- [Validation Rules](#validation-rules)
+- [Technical Details](#technical-details)
+- [Examples](#examples)
 
 ## Features
 
-- Validates PR descriptions for required sections
-- Checks for minimum content length (30 characters)
-- Detects low-quality content (repetitive text, mostly emojis)
-- Supports N/A values for optional sections
-- Provides helpful error messages with formatting examples
+### Required Sections
+
+| Section | Status | Description |
+|---------|--------|-------------|
+| **Description** | Required | Change summary |
+| **Task** | Required or N/A | Task link |
+| **Demo** | Required or N/A | Video link |
+
+### Validation Checks
+
+| Check | Implementation | Threshold |
+|-------|---------------|-----------|
+| **Length** | Count visible characters | ≥ 30 chars |
+| **Emojis** | Unicode emoji detection | < 50% emojis |
+| **Repetition** | Character frequency analysis | No excessive repetition |
+| **N/A Usage** | Exact match validation | Only in Task/Demo |
+
+## Quick Start
+
+### 1. Add to your workflow
+
+Add this job to your existing `.github/workflows/` YAML file:
+
+```yaml
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description
+        uses: Michael0967/pr-validator@v1.0.2
+```
+
+### 2. Use this template
+
+```markdown
+Description: Brief summary of your changes here.
+
+Task: https://your-task-manager.com/task/123 or N/A
+
+Demo: https://your-video-link.com or N/A
+```
 
 ## Usage
 
-### Basic Usage
-
-```yaml
-name: Validate PR Description
-on:
-  pull_request:
-    types: [opened, edited, synchronize]
-
-jobs:
-  validate-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check PR Description
-        uses: Michael0967/pr-validator@v1.0.0
-```
-
-### With Custom PR Body Input
-
-```yaml
-name: Validate PR Description
-on:
-  pull_request:
-    types: [opened, edited, synchronize]
-
-jobs:
-  validate-pr:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check PR Description
-        uses: Michael0967/pr-validator@v1.0.0
-        with:
-          pr-body: ${{ github.event.pull_request.body }}
-```
-
-## Required PR Description Format
-
-Your PR description must include the following sections:
-
-```markdown
-**Description:** Brief summary of the changes made in this PR. This should be at least 30 characters long and provide a clear overview of what was implemented or fixed.
-
-**Task:** Link to the task/issue (e.g., https://gradiweb.monday.com/...) or N/A if not applicable.
-
-**Demo:** Link to a demo video or N/A if not applicable.
-```
+The action automatically validates PR descriptions on every update.
 
 ## Validation Rules
 
-- **Description**: Required, minimum 30 characters
-- **Task**: Required, can be a link or N/A
-- **Demo**: Required, can be a link or N/A
-- Content cannot be mostly emojis
-- Content cannot be repetitive noise
-- HTML tags and markdown formatting are stripped for validation
+| Rule | Result | Example |
+|------|--------|---------|
+| Missing section | Error | No `Description:` section |
+| Empty content | Error | `Description: ` (empty) |
+| Too short | Error | `Description: Bug fix` |
+| Emoji spam | Error | `Description: 🐛✨🎉` |
+| Valid N/A | Success | `Task: N/A` |
 
-## Error Messages
+## Technical Details
 
-The action will fail with helpful error messages if:
-- Required sections are missing
-- Sections are empty
-- Content is too short
-- Content contains mostly emojis
-- Content is repetitive
+### Internal Flow
 
-## Example Output
+| Step | Action | Description |
+|------|--------|-------------|
+| 1 | Input Processing | Read `pr-body` input or `github.context.payload.pull_request.body` |
+| 2 | Section Extraction | Parse `Description:`, `Task:`, `Demo:` with regex |
+| 3 | Content Cleaning | Remove HTML, comments, Markdown formatting |
+| 4 | Validation | Apply all validation rules |
+| 5 | Result | Pass or fail with detailed feedback |
 
-### Success
+### Validation Logic
+
+| Check | Implementation | Threshold |
+|-------|---------------|-----------|
+| **Length** | Count visible characters | ≥ 30 chars |
+| **Emojis** | Unicode emoji detection | < 50% emojis |
+| **Repetition** | Character frequency analysis | No excessive repetition |
+| **N/A Usage** | Exact match validation | Only in Task/Demo |
+
+## Examples
+
+### Valid Examples
+
+**Complete:**
+```markdown
+Description: Added user authentication feature with JWT tokens.
+
+Task: https://monday.com/boards/123/pulses/456
+
+Demo: https://www.loom.com/share/abc123
 ```
-✅ PR description is valid.
+
+**With N/A:**
+```markdown
+Description: Fixed the checkout form validation bug.
+
+Task: N/A
+
+Demo: https://www.loom.com/share/xyz789
 ```
 
-### Failure
-```
-❌ ERROR: The PR description must contain valid 'Description:', 'Task:' and 'Demo:' sections.
-👀 Description section is missing.
-👀 Task section is too short (minimum 30 visible characters, or use 'N/A').
+### Invalid Examples
 
-💡 Expected format:
-Description: Short summary of the change...
-Task: https://gradiweb.monday.com/... or N/A
-Demo: Video link or N/A
+**Missing sections:**
+```markdown
+Description: Added new feature
+# Missing Task and Demo
 ```
+
+**Too short:**
+```markdown
+Description: Bug fix
+Task: N/A
+Demo: N/A
+```
+
+**Emoji spam:**
+```markdown
+Description: 🐛✨🎉🔥💯
+Task: N/A
+Demo: N/A
+```
+
+## Dependencies
+
+- `@actions/core` - Input handling and logging
+- `@actions/github` - GitHub context access
 
 ## License
 
-MIT License - see LICENSE file for details.
+MIT © 2025
+
+---
+
+<div align="center">
+[Report Bug](https://github.com/Michael0967/pr-validator/issues) • [Request Feature](https://github.com/Michael0967/pr-validator/issues)
+
+</div> 

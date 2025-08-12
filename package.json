@@ -1,11 +1,9 @@
 {
   "name": "pr-validator",
   "version": "1.0.0",
-  "description": "",
+  "description": "GitHub Action to validate PR descriptions with required sections (Description, Task, Demo)",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
+  "scripts": {},
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Michael0967/pr-validator.git"
