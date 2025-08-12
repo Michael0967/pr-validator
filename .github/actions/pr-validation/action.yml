@@ -1,6 +1,0 @@
-name: 'PR Validation'
-description: 'Validates PR description for required sections.'
-runs:
-  using: 'node16'
-  main: 'pr-validation.js'
-inputs: {}
