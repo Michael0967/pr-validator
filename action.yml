@@ -5,8 +5,10 @@ runs:
   steps:
     - name: Install dependencies
       run: npm install
+      shell: bash
     - name: Run the action
       run: node index.js
+      shell: bash
 inputs:
   pr-body:
     description: 'PR body content to validate'
