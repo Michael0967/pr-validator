@@ -1,10 +1,9 @@
 name: 'PR Checker - Description, Task, Demo'
 description: 'Validates PR description for required sections.'  
 runs:
-  using: 'node16'
-  steps:
-    - run: npm install
-    - run: node index.js
+  using: 'node20'
+  pre: 'install'
+  main: 'index.js'
 inputs:
   pr-body:
     description: 'PR body content to validate'
