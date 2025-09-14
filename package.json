@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "description": "GitHub Action to validate PR descriptions with required sections (Description, Task, Demo)",
   "main": "index.js",
-  "scripts": {},
+  "scripts": {
+    "build": "esbuild index.js --bundle --platform=node --target=node20 --outfile=dist/index.js",
+    "build:min": "esbuild index.js --bundle --platform=node --target=node20 --minify --sourcemap --outfile=dist/index.js"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Michael0967/pr-validator.git"
@@ -17,5 +20,8 @@
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^6.0.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.25.9"
   }
 }

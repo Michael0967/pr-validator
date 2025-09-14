@@ -1,15 +1,16 @@
-name: 'PR Checker - Description, Task, Demo'
-description: 'Validates PR description for required sections.'  
-runs:
-  using: 'node20'
-  pre: 'install'
-  main: 'index.js'
+name: PR Checker - Description, Task, Demo
+description: Validates PR description for required sections.
+
 inputs:
   pr-body:
-    description: 'PR body content to validate'
+    description: PR body content to validate
     required: false
-    default: ''
+    default: ""
+
+runs:
+  using: node20
+  main: dist/index.js
 
 branding:
-  icon: 'clipboard'
-  color: 'green'
+  icon: clipboard
+  color: green
