@@ -1,158 +1,204 @@
 # PR Validation GitHub Action
 
-[![GitHub Actions](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)](https://github.com/features/actions)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub
+Actions](https://img.shields.io/badge/GitHub-Actions-blue?logo=github-actions&logoColor=white)](https://github.com/features/actions)\
+[![License:
+MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-> **Validates that Pull Request descriptions include mandatory sections with quality content.**
+> **Validates that Pull Request descriptions include mandatory sections
+> with quality content.**
 
-This action ensures a minimum standard for change documentation and prevents PRs with incomplete or invalid information.
+This action ensures a minimum standard for change documentation and
+prevents PRs with incomplete or invalid information.
 
----
+------------------------------------------------------------------------
 
 ## Table of Contents
 
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [Usage](#usage)
-- [Validation Rules](#validation-rules)
-- [Technical Details](#technical-details)
-- [Examples](#examples)
+-   [Features](#features)\
+-   [Quick Start](#quick-start)\
+-   [Usage](#usage)\
+-   [Validation Rules](#validation-rules)\
+-   [Technical Details](#technical-details)\
+-   [Examples](#examples)\
+-   [Build & Release](#build--release)
+
+------------------------------------------------------------------------
 
 ## Features
 
 ### Required Sections
 
-| Section | Status | Description |
-|---------|--------|-------------|
-| **Description** | Required | Change summary |
-| **Task** | Required or N/A | Task link |
-| **Demo** | Required or N/A | Video link |
+  Section           Status            Description
+  ----------------- ----------------- -------------------
+  **Description**   Required          Change summary
+  **Task**          Required or N/A   Task link or N/A
+  **Demo**          Required or N/A   Video link or N/A
 
 ### Validation Checks
 
-| Check | Implementation | Threshold |
-|-------|---------------|-----------|
-| **Length** | Count visible characters | ≥ 30 chars |
-| **Emojis** | Unicode emoji detection | < 50% emojis |
-| **Repetition** | Character frequency analysis | No excessive repetition |
-| **N/A Usage** | Exact match validation | Only in Task/Demo |
+  ------------------------------------------------------------------------
+  Check            Implementation               Threshold
+  ---------------- ---------------------------- --------------------------
+  **Length**       Count visible characters     ≥ 30 chars (Description)
+
+  **Emojis**       Unicode emoji detection      \< 50% emojis
+
+  **Repetition**   Character frequency check    No excessive repetition
+
+  **N/A Usage**    Exact match validation       Only in Task/Demo
+  ------------------------------------------------------------------------
+
+------------------------------------------------------------------------
 
 ## Quick Start
 
 ### 1. Add to your workflow
 
-Add this job to your existing `.github/workflows/` YAML file:
-
-```yaml
+``` yaml
 jobs:
   validate-pr:
     runs-on: ubuntu-latest
     steps:
       - name: Check PR Description
-        uses: Michael0967/pr-validator@v1.0.8
+        uses: Michael0967/pr-validator@v1.0.9
 ```
 
 ### 2. Use this template
 
-```markdown
-Description: Brief summary of your changes here.
+\`\`\`markdown Description: Brief summary of your changes here.
 
 Task: https://your-task-manager.com/task/123 or N/A
 
-Demo: https://your-video-link.com or N/A
-```
+Demo: https://your-video-link.com or N/A \`\`\`
+
+------------------------------------------------------------------------
 
 ## Usage
 
-The action automatically validates PR descriptions on every update.
+The action automatically validates PR descriptions on every update.\
+Optional input:
+
+  Input          Default   Description
+  -------------- --------- ------------------------------------
+  `pr-body`      ""        Override PR body content
+  `min-length`   `30`      Minimum characters for Description
+
+Example with inputs:
+
+``` yaml
+jobs:
+  validate-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check PR Description
+        uses: Michael0967/pr-validator@v1.0.9
+        with:
+          pr-body: ${{ github.event.pull_request.body }}
+          min-length: 40
+```
+
+------------------------------------------------------------------------
 
 ## Validation Rules
 
-| Rule | Result | Example |
-|------|--------|---------|
-| Missing section | Error | No `Description:` section |
-| Empty content | Error | `Description: ` (empty) |
-| Too short | Error | `Description: Bug fix` |
-| Emoji spam | Error | `Description: 🐛✨🎉` |
-| Valid N/A | Success | `Task: N/A` |
+  Rule              Result    Example
+  ----------------- --------- ---------------------------
+  Missing section   Error     No `Description:` section
+  Empty content     Error     `Description:` (empty)
+  Too short         Error     `Description: Bug fix`
+  Emoji spam        Error     `Description: 🐛✨🎉`
+  Valid N/A         Success   `Task: N/A`
+
+------------------------------------------------------------------------
 
 ## Technical Details
 
 ### Internal Flow
 
-| Step | Action | Description |
-|------|--------|-------------|
-| 1 | Input Processing | Read `pr-body` input or `github.context.payload.pull_request.body` |
-| 2 | Section Extraction | Parse `Description:`, `Task:`, `Demo:` with regex |
-| 3 | Content Cleaning | Remove HTML, comments, Markdown formatting |
-| 4 | Validation | Apply all validation rules |
-| 5 | Result | Pass or fail with detailed feedback |
+  -------------------------------------------------------------------------
+  Step   Action              Description
+  ------ ------------------- ----------------------------------------------
+  1      Input Processing    Read `pr-body` input or PR body from context
 
-### Validation Logic
+  2      Section Extraction  Parse `Description:`, `Task:`, `Demo:`
 
-| Check | Implementation | Threshold |
-|-------|---------------|-----------|
-| **Length** | Count visible characters | ≥ 30 chars |
-| **Emojis** | Unicode emoji detection | < 50% emojis |
-| **Repetition** | Character frequency analysis | No excessive repetition |
-| **N/A Usage** | Exact match validation | Only in Task/Demo |
+  3      Content Cleaning    Remove HTML, comments, Markdown formatting
+
+  4      Validation          Apply rules (length, noise, emojis, N/A)
+
+  5      Result              Fail with feedback or succeed cleanly
+  -------------------------------------------------------------------------
+
+------------------------------------------------------------------------
 
 ## Examples
 
-### Valid Examples
+### ✅ Valid PR
 
-**Complete:**
-```markdown
-Description: Added user authentication feature with JWT tokens.
+\`\`\`markdown Description: Added user authentication with JWT tokens.
 
 Task: https://monday.com/boards/123/pulses/456
 
-Demo: https://www.loom.com/share/abc123
-```
+Demo: https://www.loom.com/share/abc123 \`\`\`
 
-**With N/A:**
-```markdown
-Description: Fixed the checkout form validation bug.
+### ✅ With N/A
+
+\`\`\`markdown Description: Fixed checkout form validation bug.
 
 Task: N/A
 
-Demo: https://www.loom.com/share/xyz789
+Demo: https://www.loom.com/share/xyz789 \`\`\`
+
+### ❌ Invalid PR
+
+\`\`\`markdown Description: Bug fix Task: N/A Demo: N/A \`\`\`
+
+------------------------------------------------------------------------
+
+## Build & Release
+
+This action is bundled with [**esbuild**](https://esbuild.github.io/)
+for performance:
+
+``` bash
+npm install
+npm run build      # generates dist/index.js
+git add dist
+git commit -m "chore: build v1.0.9"
+git tag -fa v1 -m "Release v1.0.9"
+git tag v1.0.9
+git push origin main --tags
 ```
 
-### Invalid Examples
+### Scripts (`package.json`)
 
-**Missing sections:**
-```markdown
-Description: Added new feature
-# Missing Task and Demo
+``` json
+"scripts": {
+  "build": "esbuild index.js --bundle --platform=node --target=node20 --minify --sourcemap --outfile=dist/index.js"
+}
 ```
 
-**Too short:**
-```markdown
-Description: Bug fix
-Task: N/A
-Demo: N/A
-```
+> ✅ Always **commit `dist/index.js`** to the repo so consumers can run
+> the Action without installing dependencies.
 
-**Emoji spam:**
-```markdown
-Description: 🐛✨🎉🔥💯
-Task: N/A
-Demo: N/A
-```
+------------------------------------------------------------------------
 
 ## Dependencies
 
-- `@actions/core` - Input handling and logging
-- `@actions/github` - GitHub context access
+-   `@actions/core` -- Inputs and logging\
+-   `@actions/github` -- GitHub context access\
+-   `esbuild` -- Bundling for production
+
+------------------------------------------------------------------------
 
 ## License
 
 MIT © 2025
 
----
+------------------------------------------------------------------------
 
 <div align="center">
-[Report Bug](https://github.com/Michael0967/pr-validator/issues) • [Request Feature](https://github.com/Michael0967/pr-validator/issues)
-
+[Report Bug](https://github.com/Michael0967/pr-validator/issues) •
+[Request Feature](https://github.com/Michael0967/pr-validator/issues)
 </div> 
